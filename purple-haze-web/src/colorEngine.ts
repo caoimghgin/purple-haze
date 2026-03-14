@@ -93,6 +93,24 @@ export function generateRows(inputHex: string): {
       description:
         "Cylindrical OKLab — best of both worlds: uniform + hue stable",
     },
+    {
+      space: "cam16-jmh",
+      label: "CAM16",
+      description:
+        "CIE Color Appearance Model (2016) — accounts for viewing conditions",
+    },
+    {
+      space: "hct",
+      label: "HCT",
+      description:
+        "Google Material Design 3 — CAM16 hue/chroma + CIE L* tone",
+    },
+    {
+      space: "jzazbz",
+      label: "Jzazbz",
+      description:
+        "HDR-ready perceptually uniform space (Safdar 2017)",
+    },
   ];
 
   const toWhite: InterpolationRow[] = [];

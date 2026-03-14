@@ -152,6 +152,77 @@ def interpolate_oklch(c1: np.ndarray, c2: np.ndarray, steps: int) -> list:
     return results
 
 
+def interpolate_cam16ucs(c1: np.ndarray, c2: np.ndarray, steps: int) -> list:
+    """Interpolation in CAM16-UCS — CIE's modern appearance model."""
+    ucs1 = colour.XYZ_to_CAM16UCS(srgb_to_xyz(c1))
+    ucs2 = colour.XYZ_to_CAM16UCS(srgb_to_xyz(c2))
+
+    results = []
+    for t in np.linspace(0, 1, steps):
+        ucs = ucs1 * (1 - t) + ucs2 * t
+        srgb = xyz_to_srgb(colour.CAM16UCS_to_XYZ(ucs))
+        results.append(srgb)
+    return results
+
+
+def interpolate_hct(c1: np.ndarray, c2: np.ndarray, steps: int) -> list:
+    """Interpolation in HCT — Google Material Design 3.
+    HCT uses CAM16 hue & chroma with CIE L* tone.
+    We interpolate in the cylindrical (H, C, T) space with shortest hue path.
+    """
+    from colour.appearance import XYZ_to_CAM16, CAM16_to_XYZ, CAM_Specification_CAM16
+
+    XYZ_w = colour.TVS_ILLUMINANTS["CIE 1931 2 Degree Standard Observer"]["D65"]
+    L_A, Y_b = 64.0, 20.0
+
+    def srgb_to_hct(srgb):
+        xyz = srgb_to_xyz(srgb)
+        cam = XYZ_to_CAM16(xyz, XYZ_w=XYZ_w, L_A=L_A, Y_b=Y_b)
+        T = colour.XYZ_to_Lab(xyz)[0]  # CIE L* as tone
+        return np.array([cam.h, cam.C, T])
+
+    def hct_to_srgb(hct_val):
+        h, C, T = hct_val
+        # Reconstruct via CAM16: use T (CIE L*) to derive J
+        xyz_grey = colour.Lab_to_XYZ(np.array([T, 0.0, 0.0]))
+        cam_grey = XYZ_to_CAM16(xyz_grey, XYZ_w=XYZ_w, L_A=L_A, Y_b=Y_b)
+        J = float(cam_grey.J)
+        spec = CAM_Specification_CAM16(J=J, C=C, h=h)
+        xyz = CAM16_to_XYZ(spec, XYZ_w=XYZ_w, L_A=L_A, Y_b=Y_b)
+        return xyz_to_srgb(xyz)
+
+    hct1 = srgb_to_hct(c1)
+    hct2 = srgb_to_hct(c2)
+
+    results = []
+    for t in np.linspace(0, 1, steps):
+        # Shortest hue path
+        dh = hct2[0] - hct1[0]
+        if dh > 180:
+            dh -= 360
+        elif dh < -180:
+            dh += 360
+        h = (hct1[0] + t * dh) % 360
+        C = hct1[1] * (1 - t) + hct2[1] * t
+        T = hct1[2] * (1 - t) + hct2[2] * t
+        srgb = hct_to_srgb(np.array([h, C, T]))
+        results.append(srgb)
+    return results
+
+
+def interpolate_jzazbz(c1: np.ndarray, c2: np.ndarray, steps: int) -> list:
+    """Interpolation in Jzazbz — HDR-ready perceptually uniform space."""
+    jz1 = colour.XYZ_to_Jzazbz(srgb_to_xyz(c1))
+    jz2 = colour.XYZ_to_Jzazbz(srgb_to_xyz(c2))
+
+    results = []
+    for t in np.linspace(0, 1, steps):
+        jz = jz1 * (1 - t) + jz2 * t
+        srgb = xyz_to_srgb(colour.Jzazbz_to_XYZ(jz))
+        results.append(srgb)
+    return results
+
+
 # ---------------------------------------------------------------------------
 # LCH <-> Lab helpers (works for both CIE Lab and OKLab)
 # ---------------------------------------------------------------------------
@@ -181,6 +252,9 @@ SPACES = [
     ("CIE LCH",  "Cylindrical Lab — hue angle preserved, uneven chroma",  interpolate_lch),
     ("OKLab",     "Improved uniformity (Ottosson 2020) — fixes purple shift", interpolate_oklab),
     ("OKLch",     "Cylindrical OKLab — uniform + hue stable",             interpolate_oklch),
+    ("CAM16",     "CIE Color Appearance Model (2016) — viewing conditions", interpolate_cam16ucs),
+    ("HCT",       "Google Material Design 3 — CAM16 hue + CIE L* tone",    interpolate_hct),
+    ("Jzazbz",    "HDR-ready perceptually uniform (Safdar 2017)",           interpolate_jzazbz),
 ]
 
 

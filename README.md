@@ -19,7 +19,7 @@ This repo contains two standalone implementations of the same demo:
 
 ## Color spaces compared
 
-Each implementation interpolates your chosen color to white and to black in all six spaces:
+Each implementation interpolates your chosen color to white and to black in nine color spaces:
 
 | Space | What it is | What you'll see |
 |---|---|---|
@@ -29,6 +29,9 @@ Each implementation interpolates your chosen color to white and to black in all 
 | **CIE LCH** | Cylindrical form of L\*a\*b\* | Even more dramatic purple/pink drift |
 | **OKLab** | Improved perceptual uniformity (Ottosson, 2020) | Hue stays true — the fix |
 | **OKLch** | Cylindrical OKLab | Best of both: uniform lightness + stable hue |
+| **CAM16** | CIE Color Appearance Model (2016) | Accounts for viewing conditions; slight grey-out in darks |
+| **HCT** | Google Material Design 3 (CAM16 hue + CIE L\* tone) | Hue-stable with perceptually even tone steps |
+| **Jzazbz** | HDR-ready perceptually uniform (Safdar, 2017) | Excellent hue linearity, similar to OKLab |
 
 ## Quick start — Web
 
