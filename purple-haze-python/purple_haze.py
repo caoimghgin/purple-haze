@@ -233,7 +233,7 @@ def interpolate_jzazbz(c1: np.ndarray, c2: np.ndarray, steps: int) -> list:
 # LCH <-> Lab helpers (works for both CIE Lab and OKLab)
 # ---------------------------------------------------------------------------
 
-def _pin_achromatic_hue(lch1: np.ndarray, lch2: np.ndarray, threshold: float = 1e-4):
+def _pin_achromatic_hue(lch1: np.ndarray, lch2: np.ndarray, threshold: float = 0.5):
     """When one endpoint has near-zero chroma, its hue from atan2 is
     meaningless. Pin it to the chromatic endpoint's hue so we don't
     interpolate through an arbitrary hue angle."""
