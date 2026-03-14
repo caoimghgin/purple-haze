@@ -1,5 +1,7 @@
 # Purple Haze
 
+![Purple Haze demo screenshot](resources/hero.png)
+
 **Why does blue go purple when you fade it to black?**
 
 Purple Haze is a visual demo that answers this question by interpolating a single color toward white and black across six different color spaces — side by side — so you can *see* the difference.
