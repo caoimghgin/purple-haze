@@ -97,13 +97,13 @@ export function generateRows(inputHex: string): {
       space: "cam16-jmh",
       label: "CAM16",
       description:
-        "CIE Color Appearance Model (2016) — accounts for viewing conditions",
+        "CIE Color Appearance Model (2016) — phantom achromatic hue causes cyan drift",
     },
     {
       space: "hct",
       label: "HCT",
       description:
-        "Google Material Design 3 — CAM16 hue/chroma + CIE L* tone",
+        "Google Material Design 3 — inherits CAM16's achromatic hue artifact",
     },
     {
       space: "jzazbz",
