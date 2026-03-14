@@ -252,8 +252,8 @@ SPACES = [
     ("CIE LCH",  "Cylindrical Lab — hue angle preserved, uneven chroma",  interpolate_lch),
     ("OKLab",     "Improved uniformity (Ottosson 2020) — fixes purple shift", interpolate_oklab),
     ("OKLch",     "Cylindrical OKLab — uniform + hue stable",             interpolate_oklch),
-    ("CAM16",     "CIE Color Appearance Model (2016) — viewing conditions", interpolate_cam16ucs),
-    ("HCT",       "Google Material Design 3 — CAM16 hue + CIE L* tone",    interpolate_hct),
+    ("CAM16",     "CIE CAM (2016) — phantom achromatic hue causes cyan drift", interpolate_cam16ucs),
+    ("HCT",       "Google M3 — inherits CAM16's achromatic hue artifact",    interpolate_hct),
     ("Jzazbz",    "HDR-ready perceptually uniform (Safdar 2017)",           interpolate_jzazbz),
 ]
 
