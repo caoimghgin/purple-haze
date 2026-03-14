@@ -99,6 +99,9 @@ def interpolate_lch(c1: np.ndarray, c2: np.ndarray, steps: int) -> list:
     lch1 = _lab_to_lch(lab1)
     lch2 = _lab_to_lch(lab2)
 
+    # When chroma ≈ 0, hue is undefined — carry the chromatic endpoint's hue
+    _pin_achromatic_hue(lch1, lch2)
+
     results = []
     for t in np.linspace(0, 1, steps):
         L = lch1[0] * (1 - t) + lch2[0] * t
@@ -135,6 +138,9 @@ def interpolate_oklch(c1: np.ndarray, c2: np.ndarray, steps: int) -> list:
     ok2 = colour.XYZ_to_Oklab(srgb_to_xyz(c2))
     lch1 = _lab_to_lch(ok1)
     lch2 = _lab_to_lch(ok2)
+
+    # When chroma ≈ 0, hue is undefined — carry the chromatic endpoint's hue
+    _pin_achromatic_hue(lch1, lch2)
 
     results = []
     for t in np.linspace(0, 1, steps):
@@ -226,6 +232,16 @@ def interpolate_jzazbz(c1: np.ndarray, c2: np.ndarray, steps: int) -> list:
 # ---------------------------------------------------------------------------
 # LCH <-> Lab helpers (works for both CIE Lab and OKLab)
 # ---------------------------------------------------------------------------
+
+def _pin_achromatic_hue(lch1: np.ndarray, lch2: np.ndarray, threshold: float = 1e-4):
+    """When one endpoint has near-zero chroma, its hue from atan2 is
+    meaningless. Pin it to the chromatic endpoint's hue so we don't
+    interpolate through an arbitrary hue angle."""
+    if lch1[1] < threshold and lch2[1] >= threshold:
+        lch1[2] = lch2[2]
+    elif lch2[1] < threshold and lch1[1] >= threshold:
+        lch2[2] = lch1[2]
+
 
 def _lab_to_lch(lab: np.ndarray) -> np.ndarray:
     L, a, b = lab
