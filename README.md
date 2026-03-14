@@ -51,8 +51,12 @@ Requires Python 3.9+.
 
 ```bash
 cd purple-haze-python
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
+
+> **Note:** Modern macOS (Homebrew Python) requires a virtual environment — the commands above handle that for you. On subsequent runs you just need to activate it: `source .venv/bin/activate`
 
 Run interactively (opens a matplotlib window):
 

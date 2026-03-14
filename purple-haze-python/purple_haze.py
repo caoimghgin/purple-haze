@@ -12,15 +12,15 @@ Usage:
 """
 
 import sys
+import warnings
+
+# Must filter before importing colour-science — it warns at import time
+warnings.filterwarnings("ignore", message=".*SciPy.*")
+
 import numpy as np
 import colour
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-from matplotlib.colors import to_hex
-
-# Suppress scipy warning — we don't need it
-import warnings
-warnings.filterwarnings("ignore", message=".*SciPy.*")
 
 STEPS = 13
 
